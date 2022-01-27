@@ -19,7 +19,6 @@ app.get('/mantis_api/kit', (req, res) => {
         })
         .catch(error => {
             res.status(500).send(error);
-            res.status(502).send("help")
         })
 })
 
