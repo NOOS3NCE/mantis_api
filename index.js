@@ -6,13 +6,13 @@ const mantis_model = require('./mantis_model')
 
 app.use(express.json())
 app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Origin', 'http://45.63.64.58:3001');
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers');
     next();
 });
 
-app.get('/kit', (req, res) => {
+app.get('/mantis_api/kit', (req, res) => {
     mantis_model.getKits()
         .then(response => {
             res.status(200).send(response);
@@ -22,7 +22,7 @@ app.get('/kit', (req, res) => {
         })
 })
 
-app.get('/kit/:id', (req, res) => {
+app.get('/mantis_api/kit/:id', (req, res) => {
     mantis_model.getKit(req.params.id)
         .then(response => {
             res.status(200).send(response);
@@ -32,7 +32,7 @@ app.get('/kit/:id', (req, res) => {
             console.log("REQUEST",req.params.id)
         })
 })
-app.get('/lens', (req, res) => {
+app.get('/mantis_api/lens', (req, res) => {
     mantis_model.getLenses()
         .then(response => {
             res.status(200).send(response);
