@@ -6,7 +6,7 @@ const mantis_model = require('./mantis_model')
 
 app.use(express.json())
 app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'http://45.63.64.58:3000');
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers');
     next();
