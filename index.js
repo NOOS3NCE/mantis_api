@@ -43,7 +43,7 @@ app.get('/mantis_api/lens', (req, res) => {
             res.status(500).send(error);
         })
 })
-app.patch('mantis_api/lens/swap', (req,res)=>{
+app.patch('/mantis_api/lens/swap', (req,res)=>{
     mantis_model.swapLenses(req)
         .then(response =>  {
             res.status(200).send(response)
@@ -52,7 +52,7 @@ app.patch('mantis_api/lens/swap', (req,res)=>{
             res.status(500).send(error)
         })
 })
-app.post('mantis_api/kit', (req, res) => {
+app.post('/mantis_api/kit', (req, res) => {
     mantis_model.createKit(req.body)
         .then(response => {
             res.status(200).send(response);
@@ -61,7 +61,7 @@ app.post('mantis_api/kit', (req, res) => {
             res.status(500).send(error);
         })
 })
-app.post('mantis_api/lens', (req, res) => {
+app.post('/mantis_api/lens', (req, res) => {
     mantis_model.createLens(req.body)
         .then(response => {
             res.status(200).send(response);
@@ -71,7 +71,7 @@ app.post('mantis_api/lens', (req, res) => {
         })
 })
 
-app.delete('mantis_api/kit/:id', (req, res) => {
+app.delete('/mantis_api/kit/:id', (req, res) => {
     mantis_model.deleteKit(req.params.id)
         .then(response => {
             res.status(200).send(response);
@@ -81,7 +81,7 @@ app.delete('mantis_api/kit/:id', (req, res) => {
         })
 })
 
-app.get('mantis_api/cities',(req,res) => {
+app.get('/mantis_api/cities',(req,res) => {
     mantis_model.getCities()
         .then(response => {
             res.status(200).send(response);
