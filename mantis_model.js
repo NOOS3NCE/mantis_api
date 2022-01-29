@@ -1,10 +1,11 @@
 const {request} = require("express");
+require('dotenv').config()
 const Pool = require('pg').Pool
 const pool = new Pool({
-    user: 'halemikehale',
-    host: 'localhost',
-    database: 'halemikehale',
-    password: 'Heywuzzup123!',
+    user: process.env.LOGNAME === 'mikehale' ? process.env.DB_USER : 'halemikehale',
+    host: process.env.LOGNAME === 'mikehale' ? process.env.DB_HOST : 'localhost',
+    database: process.env.LOGNAME === 'mikehale' ? process.env.DB_DATABASE : 'halemikehale',
+    password: process.env.LOGNAME === 'mikehale' ? process.env.DB_PASS : 'Heywuzzup123!',
     port: 5432,
 });
 
