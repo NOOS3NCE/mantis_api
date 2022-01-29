@@ -1,10 +1,10 @@
 const {request} = require("express");
 const Pool = require('pg').Pool
 const pool = new Pool({
-    user:process.env.HOME === '/Users/mikehale' ? process.env.DB_USER : 'halemikehale',
-    host:process.env.HOME === '/Users/mikehale' ?  process.env.DB_HOST : 'wildorchid.one',
-    database: process.env.HOME === '/Users/mikehale' ? process.env.DB_DATABASE : 'halemikehale',
-    password:process.env.HOME === '/Users/mikehale' ?  process.env.DB_PASS : 'Heywuzzup123!',
+    user: 'halemikehale',
+    host: 'wildorchid.one',
+    database: 'halemikehale',
+    password: 'Heywuzzup123!',
     port: 5432,
 });
 
