@@ -2,7 +2,7 @@ const {request} = require("express");
 const Pool = require('pg').Pool
 const pool = new Pool({
     user: 'halemikehale',
-    host: 'wildorchid.one',
+    host: 'localhost',
     database: 'halemikehale',
     password: 'Heywuzzup123!',
     port: 5432,
