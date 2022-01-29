@@ -1,13 +1,14 @@
 const express = require('express')
 const app = express()
 const port = 3001
+require('dotenv').config()
 
+console.log(process.env)
 const mantis_model = require('./mantis_model')
 
 app.use(express.json())
 app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'https://wildorchid.one');
-    res.setHeader('Access-Control-Allow-Origin', 'https://localhost:3000');
+    res.setHeader('Access-Control-Allow-Origin', process.env.DB_ORIGIN || 'https://wildorchid.one');
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers');
     next();
@@ -42,7 +43,7 @@ app.get('/mantis_api/lens', (req, res) => {
             res.status(500).send(error);
         })
 })
-app.patch('/lens/swap', (req,res)=>{
+app.patch('mantis_api/lens/swap', (req,res)=>{
     mantis_model.swapLenses(req)
         .then(response =>  {
             res.status(200).send(response)
@@ -51,7 +52,7 @@ app.patch('/lens/swap', (req,res)=>{
             res.status(500).send(error)
         })
 })
-app.post('/kit', (req, res) => {
+app.post('mantis_api/kit', (req, res) => {
     mantis_model.createKit(req.body)
         .then(response => {
             res.status(200).send(response);
@@ -60,7 +61,7 @@ app.post('/kit', (req, res) => {
             res.status(500).send(error);
         })
 })
-app.post('/lens', (req, res) => {
+app.post('mantis_api/lens', (req, res) => {
     mantis_model.createLens(req.body)
         .then(response => {
             res.status(200).send(response);
@@ -70,7 +71,7 @@ app.post('/lens', (req, res) => {
         })
 })
 
-app.delete('/kit/:id', (req, res) => {
+app.delete('mantis_api/kit/:id', (req, res) => {
     mantis_model.deleteKit(req.params.id)
         .then(response => {
             res.status(200).send(response);
@@ -80,7 +81,7 @@ app.delete('/kit/:id', (req, res) => {
         })
 })
 
-app.get('/cities',(req,res) => {
+app.get('mantis_api/cities',(req,res) => {
     mantis_model.getCities()
         .then(response => {
             res.status(200).send(response);
