@@ -1,14 +1,24 @@
-const {request} = require("express");
 require('dotenv').config()
 const Pool = require('pg').Pool
+
 const pool = new Pool({
-    user: process.env.LOGNAME === 'mikehale' ? process.env.DB_USER : 'halemikehale',
-    host: process.env.LOGNAME === 'mikehale' ? process.env.DB_HOST : 'localhost',
-    database: process.env.LOGNAME === 'mikehale' ? process.env.DB_DATABASE : 'halemikehale',
-    password: process.env.LOGNAME === 'mikehale' ? process.env.DB_PASS : 'Heywuzzup123!',
+    user: process.env.SUDO_USER === 'mikehale' ? process.env.DB_USER : 'halemikehale',
+    host: process.env.SUDO_USER === 'mikehale' ? process.env.DB_HOST : 'localhost',
+    database: process.env.SUDO_USER === 'mikehale' ? process.env.DB_DATABASE : 'halemikehale',
+    password: process.env.SUDO_USER === 'mikehale' ? process.env.DB_PASS : 'Heywuzzup123!',
     port: 5432,
 });
 
+const getEvents = () => {
+    return new Promise( function(resolve, reject) {
+        pool.query('SELECT * FROM events', async (error, results) => {
+            if(error){
+                reject(error)
+            }
+            resolve(results.rows)
+        })
+    })
+}
 const getKits= () => {
     return new Promise(function(resolve, reject) {
         pool.query('SELECT kits.*, cities.city_code, users.user_firstname, users.user_lastname FROM kits LEFT JOIN cities ON kits.city_id = cities.city_id LEFT JOIN users ON kits.user_id = users.user_id GROUP BY kits.kit_id, cities.city_id, users.user_id ORDER BY kits.kit_display ASC', async (error, results) => {
@@ -22,7 +32,16 @@ const getKits= () => {
 const getLenses = () => {
     return new Promise( function(resolve,reject) {
         pool.query('SELECT lenses.*, kits.kit_display FROM kits RIGHT JOIN lenses ON lenses.kit_id = kits.kit_id GROUP BY lenses.kit_id, lenses.lens_model, lenses.lens_brand, lenses.lens_serial, lenses.lens_name, lenses.lens_display, lenses.lens_id, kits.kit_id, kits.kit_display ORDER BY lenses.lens_display ASC', async (error, results) => {
-            console.log("Lenses", results.rows)
+            if(error){
+                reject(error)
+            }
+            resolve(results.rows)
+        })
+    })
+}
+const getCameras = () => {
+    return new Promise( function(resolve,reject) {
+        pool.query('SELECT cameras.*, kits.kit_display FROM kits RIGHT JOIN cameras ON cameras.kit_id = kits.kit_id GROUP BY cameras.kit_id, cameras.camera_model, cameras.camera_brand, cameras.camera_serial, cameras.camera_name, cameras.camera_display, cameras.camera_id, kits.kit_id, kits.kit_display ORDER BY cameras.camera_display ASC', async (error, results) => {
             if(error){
                 reject(error)
             }
@@ -32,9 +51,6 @@ const getLenses = () => {
 }
 const swapLenses=(body)=>{
     const {lens_id, kit_id} = body.body
-    console.log("BODY:",body.body)
-    console.log("LENS ID: ", lens_id)
-    console.log("KIT ID: ", kit_id)
     return new Promise(function(resolve,reject){
         pool.query('UPDATE lenses SET kit_id = $2 WHERE lens_id = $1', [lens_id,kit_id],async(error,results)=>{
             if(error){
@@ -53,19 +69,26 @@ const getKit = (id) => {
             }
             kit = results.rows[0]
             pool.query('SELECT * FROM lenses WHERE kit_id = $1', [kit.kit_id],(err, lenses) => {
-                if(error){
+                if (error) {
                     reject(error)
                 }
-                pool.query('SELECT * FROM users WHERE user_id = $1', [kit.user_id],(err, users) => {
-                    if(error){
+                pool.query('SELECT * FROM cameras WHERE kit_id = $1', [kit.kit_id], (err, cameras) => {
+                    if (error) {
                         reject(error)
                     }
-                    const user = users.rows[0]
-                    const lensList = lenses.rows
-                    kit = results.rows[0]
-                    kit.lenses = lensList
-                    kit.user = user
-                    resolve(kit)
+                    pool.query('SELECT * FROM users WHERE user_id = $1', [kit.user_id], (err, users) => {
+                        if (error) {
+                            reject(error)
+                        }
+                        const cameraList = cameras.rows
+                        const user = users.rows[0]
+                        const lensList = lenses.rows
+                        kit = results.rows[0]
+                        kit.cameras = cameraList
+                        kit.lenses = lensList
+                        kit.user = user
+                        resolve(kit)
+                    })
                 })
             })
         })
@@ -73,10 +96,8 @@ const getKit = (id) => {
 
 }
 const createKit = (body) => {
-
     return new Promise(function(resolve, reject) {
-        const {kit_display, city_id, kit_name, kit_type, camera, lenses} = body
-        console.log("KIT BODY: ", body)
+        const {kit_display, city_id, kit_name, kit_type} = body
         pool.query('INSERT INTO kits (kit_name, kit_display, kit_type, city_id) VALUES ($3,$1,$4,$2)', [kit_display, city_id, kit_name, kit_type] , (error, results) => {
             if (error) {
                 reject(error)
@@ -85,11 +106,45 @@ const createKit = (body) => {
         })
     })
 }
+const createClient = (body) => {
+    return new Promise( function(resolve, reject){
+        const {client_firstname, client_lastname, client_phone, client_email, client_address1, client_address2, client_city, client_state, client_zip} = body
+        pool.query('INSERT INTO clients(client_firstname, client_lastname, client_phone, client_email, client_address1, client_address2, client_city, client_state, client_zip)VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [client_firstname, client_lastname, client_phone, client_email, client_address1, client_address2, client_city, client_state, client_zip], (error, results) => {
+            if(error){
+                reject(error)
+            }
+            resolve(`A new client has been added: ${results}`)
+        })
+    })
+}
+const createVenue = (body) => {
+    return new Promise(function(resolve, reject){
+        const {venue_name, venue_address1, venue_address2, venue_city, venue_state, venue_zip, venue_contact, venue_phone, venue_email, venue_created_at} = body
+        pool.query('INSERT INTO venues (venue_name, venue_address1, venue_address2, venue_city, venue_state, venue_zip, venue_contact, venue_phone, venue_email, venue_created_at) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)', [venue_name, venue_address1, venue_address2, venue_city, venue_state, venue_zip, venue_contact, venue_phone, venue_email, venue_created_at], (error, results) => {
+            if(error){
+                reject(error)
+            }
+            resolve(`A new venue has been added: ${results}`)
+        })
+    })
+}
 const createLens = (body) => {
     return new Promise(function(resolve, reject){
         const {lens_brand, lens_name, lens_serial, lens_model, lens_display, kit_name} = body
         console.log("LENS BODY:", body)
         pool.query('INSERT INTO lenses (lens_brand, lens_name, lens_serial, lens_model, lens_display, kit_id) SELECT $1, $2, $3, $4, $5, kits.kit_id FROM kits WHERE kits.kit_name = $6', [lens_brand, lens_name, lens_serial, lens_model, lens_display, kit_name], (error, results) => {
+            if(error){
+                reject(error)
+            }
+            resolve(`A new lens has been added: ${results}`)
+        })
+    })
+}
+const createCamera = (body) => {
+    return new Promise(function(resolve, reject){
+        const {camera_brand, camera_name, camera_serial, camera_model, camera_display, kit_name} = body
+        console.log("LENS BODY:", body)
+        pool.query('INSERT INTO cameras (camera_brand, camera_name, camera_serial, camera_model, camera_display, kit_id) SELECT $1, $2, $3, $4, $5, kits.kit_id FROM kits WHERE kits.kit_name = $6', [camera_brand, camera_name, camera_serial, camera_model, camera_display, kit_name], (error, results) => {
             if(error){
                 reject(error)
             }
@@ -132,5 +187,10 @@ module.exports = {
     loadOutKit,
     createLens,
     getLenses,
-    swapLenses
+    swapLenses,
+    getEvents,
+    createClient,
+    createVenue,
+    createCamera,
+    getCameras
 }
