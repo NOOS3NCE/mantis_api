@@ -31,7 +31,7 @@ const getKits= () => {
 }
 const getLenses = () => {
     return new Promise( function(resolve,reject) {
-        pool.query('SELECT lenses.*, kits.kit_display FROM kits RIGHT JOIN lenses ON lenses.kit_id = kits.kit_id GROUP BY lenses.kit_id, lenses.lens_model, lenses.lens_brand, lenses.lens_serial, lenses.lens_name, lenses.lens_display, lenses.lens_id, kits.kit_id, kits.kit_display ORDER BY lenses.lens_display ASC', async (error, results) => {
+        pool.query('SELECT lenses.*, kits.kit_display FROM kits RIGHT JOIN lenses ON lenses.kit_id = kits.kit_id GROUP BY lenses.kit_id, lenses.lens_model, lenses.lens_brand, lenses.lens_serial, lenses.lens_display, lenses.lens_id, kits.kit_id, kits.kit_display ORDER BY lenses.lens_display ASC', async (error, results) => {
             if(error){
                 reject(error)
             }
@@ -130,9 +130,9 @@ const createVenue = (body) => {
 }
 const createLens = (body) => {
     return new Promise(function(resolve, reject){
-        const {lens_brand, lens_name, lens_serial, lens_model, lens_display, kit_name} = body
+        const {lens_brand, lens_serial, lens_model, kit_id, lens_purchase_date} = body
         console.log("LENS BODY:", body)
-        pool.query('INSERT INTO lenses (lens_brand, lens_name, lens_serial, lens_model, lens_display, kit_id) SELECT $1, $2, $3, $4, $5, kits.kit_id FROM kits WHERE kits.kit_name = $6', [lens_brand, lens_name, lens_serial, lens_model, lens_display, kit_name], (error, results) => {
+        pool.query('INSERT INTO lenses (lens_brand, lens_model_id, lens_serial, lens_model, kit_id, lens_purchase_date, lens_created_at, lens_updated_at) SELECT $1,(SELECT COALESCE(MAX(lens_model_id) + 1,1)  FROM lenses WHERE lens_model = $3), $2, $3, $4, $5, NOW(), NOW()', [lens_brand, lens_serial, lens_model, kit_id, lens_purchase_date], (error, results) => {
             if(error){
                 reject(error)
             }
