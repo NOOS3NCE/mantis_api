@@ -131,8 +131,18 @@ const createVenue = (body) => {
 const createLens = (body) => {
     return new Promise(function(resolve, reject){
         const {lens_brand, lens_serial, lens_model, kit_id, lens_purchase_date, lens_img} = body
-        console.log("LENS BODY:", body)
         pool.query('INSERT INTO lenses (lens_brand, lens_model_id, lens_serial, lens_model, kit_id, lens_purchase_date, lens_created_at, lens_updated_at, lens_img) SELECT $1,(SELECT COALESCE(MAX(lens_model_id) + 1,1)  FROM lenses WHERE lens_model = $3), $2, $3, $4, $5, NOW(), NOW(), $6', [lens_brand, lens_serial, lens_model, kit_id, lens_purchase_date, lens_img], (error, results) => {
+            if(error){
+                reject(error)
+            }
+            resolve(`A new lens has been added: ${results}`)
+        })
+    })
+}
+const createGearHistory = (body) => {
+    return new Promise(function(resolve, reject){
+        const {kit_id, lens_id, camera_id, history_message, history_target, history_sender, history_title, history_created_at, history_updated_at} = body
+        pool.query('INSERT INTO gear_history (kit_id, lens_id, camera_id, history_message, history_target, history_sender, history_title, history_created_at, history_updated_at) SELECT $1, $2, $3, $4, $5, $6, $7, NOW(), NOW(),', [kit_id, lens_id, camera_id, history_message, history_target, history_sender, history_title, history_created_at, history_updated_at], (error, results) => {
             if(error){
                 reject(error)
             }
@@ -192,5 +202,6 @@ module.exports = {
     createClient,
     createVenue,
     createCamera,
-    getCameras
+    getCameras,
+    createGearHistory
 }

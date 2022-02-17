@@ -200,6 +200,17 @@ app.get('/mantis_api/cities',(req,res) => {
         })
 })
 
+//HISTORY---------------------------------------------------------------------------------------------------
+app.post('/mantis_api/history', (req, res) => {
+    mantis_model.createGearHistory(req.body)
+        .then(response => {
+            res.status(200).send(response);
+        })
+        .catch(error => {
+            res.status(500).send(error);
+        })
+})
+
 //PORT------------------------------------------------------------------------------------------------------
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)
