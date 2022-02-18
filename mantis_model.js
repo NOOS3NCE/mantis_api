@@ -152,9 +152,9 @@ const createGearHistory = (body) => {
 }
 const createCamera = (body) => {
     return new Promise(function(resolve, reject){
-        const {camera_brand, camera_name, camera_serial, camera_model, camera_display, kit_name, camera_img} = body
+        const {camera_brand, camera_serial, camera_model, kit_id, camera_img} = body
         console.log("LENS BODY:", body)
-        pool.query('INSERT INTO cameras (camera_brand, camera_name, camera_serial, camera_model, camera_display, camera_img, kit_id) SELECT $1, $2, $3, $4, $5, $7, kits.kit_id FROM kits WHERE kits.kit_name = $6', [camera_brand, camera_name, camera_serial, camera_model, camera_display, kit_name, camera_img], (error, results) => {
+        pool.query('INSERT INTO cameras (camera_brand, camera_serial, camera_model, camera_display, camera_img, kit_id) SELECT $1, $2, $3, (SELECT COALESCE(MAX(camera_display) + 1,1)), $5, $4', [camera_brand,camera_serial, camera_model, kit_id, camera_img], (error, results) => {
             if(error){
                 reject(error)
             }
