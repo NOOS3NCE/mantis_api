@@ -150,6 +150,16 @@ const createGearHistory = (body) => {
         })
     })
 }
+const getKitHistory = (id) => {
+    return new Promise( function(resolve,reject) {
+        pool.query('SELECT * FROM gear_history WHERE gear_history.kit_id = $1', [id], async (error, results) => {
+            if(error){
+                reject(error)
+            }
+            resolve(results.rows)
+        })
+    })
+}
 const createCamera = (body) => {
     return new Promise(function(resolve, reject){
         const {camera_brand, camera_serial, camera_model, kit_id, camera_img} = body
@@ -203,5 +213,6 @@ module.exports = {
     createVenue,
     createCamera,
     getCameras,
-    createGearHistory
+    createGearHistory,
+    getKitHistory
 }
