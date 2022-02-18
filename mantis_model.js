@@ -154,7 +154,7 @@ const createCamera = (body) => {
     return new Promise(function(resolve, reject){
         const {camera_brand, camera_serial, camera_model, kit_id, camera_img} = body
         console.log("LENS BODY:", body)
-        pool.query('INSERT INTO cameras (camera_brand, camera_serial, camera_model, camera_display, camera_img, kit_id) SELECT $1, $2, $3, (SELECT COALESCE(MAX(camera_display) + 1,1) FROM cameras), $5, $4', [camera_brand,camera_serial, camera_model, kit_id, camera_img], (error, results) => {
+        pool.query('INSERT INTO cameras (camera_brand, camera_serial, camera_model, camera_img, kit_id) SELECT $1, $2, $3, $5, $4', [camera_brand,camera_serial, camera_model, kit_id, camera_img], (error, results) => {
             if(error){
                 reject(error)
             }
