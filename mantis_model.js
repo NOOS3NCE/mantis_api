@@ -140,22 +140,27 @@ const createLens = (body) => {
     })
 }
 const createGearHistory = (body) => {
+    console.log("HISTORY BODY:", body)
     return new Promise(function(resolve, reject){
-        const {kit_id, lens_id, camera_id, history_message, history_target, history_sender, history_title, history_created_at, history_updated_at} = body
-        pool.query('INSERT INTO gear_history (kit_id, lens_id, camera_id, history_message, history_target, history_sender, history_title, history_created_at, history_updated_at) SELECT $1, $2, $3, $4, $5, $6, $7, NOW(), NOW(),', [kit_id, lens_id, camera_id, history_message, history_target, history_sender, history_title, history_created_at, history_updated_at], (error, results) => {
+        const {kit_id, lens_id, history_message, history_target, history_sender, history_title} = body
+        pool.query('INSERT INTO gear_history (kit_id, lens_id, history_message, history_target, history_sender, history_title, history_created_at, history_updated_at) SELECT $1, $2, $3, $4, $5, $6, NOW(), NOW()', [kit_id, lens_id, history_message, history_target, history_sender, history_title], (error, results) => {
             if(error){
+                console.log("CREATE HISTORY REJECT: ", error)
                 reject(error)
             }
+            console.log("CREATE HISTORY RESULTS: ", results)
             resolve(`A new lens has been added: ${results}`)
         })
     })
 }
 const getKitHistory = (id) => {
+    console.log("ID: ",id)
     return new Promise( function(resolve,reject) {
-        pool.query('SELECT * FROM gear_history WHERE gear_history.kit_id = $1', [id], async (error, results) => {
+        pool.query('SELECT * FROM gear_history WHERE kit_id = $1', [id], async (error, results) => {
             if(error){
                 reject(error)
             }
+            console.log(results)
             resolve(results.rows)
         })
     })

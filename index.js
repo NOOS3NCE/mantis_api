@@ -210,7 +210,7 @@ app.post('/mantis_api/history', (req, res) => {
             res.status(500).send(error);
         })
 })
-app.get('/mantis_api/history/kit', (req, res) => {
+app.get('/mantis_api/history/kit/:id', (req, res) => {
     mantis_model.getKitHistory(req.params.id)
         .then(response => {
             res.status(200).send(response);
