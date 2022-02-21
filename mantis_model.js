@@ -41,7 +41,7 @@ const getLenses = () => {
 }
 const getCameras = () => {
     return new Promise( function(resolve,reject) {
-        pool.query('SELECT cameras.*, kits.kit_display FROM kits RIGHT JOIN cameras ON cameras.kit_id = kits.kit_id GROUP BY cameras.kit_id, cameras.camera_model, cameras.camera_brand, cameras.camera_serial, cameras.camera_name, cameras.camera_display, cameras.camera_id, kits.kit_id, kits.kit_display ORDER BY cameras.camera_display ASC', async (error, results) => {
+        pool.query('SELECT cameras.*, kits.kit_display FROM kits RIGHT JOIN cameras ON cameras.kit_id = kits.kit_id GROUP BY cameras.kit_id, cameras.camera_model, cameras.camera_brand, cameras.camera_serial, cameras.camera_img, cameras.camera_display, cameras.camera_id, kits.kit_id, kits.kit_display ORDER BY cameras.camera_display ASC', async (error, results) => {
             if(error){
                 reject(error)
             }
@@ -156,7 +156,7 @@ const createGearHistory = (body) => {
 const getKitHistory = (id) => {
     console.log("ID: ",id)
     return new Promise( function(resolve,reject) {
-        pool.query('SELECT * FROM gear_history WHERE kit_id = $1', [id], async (error, results) => {
+        pool.query('SELECT * FROM gear_history WHERE kit_id = $1 ORDER BY history_updated_at DESC', [id], async (error, results) => {
             if(error){
                 reject(error)
             }
