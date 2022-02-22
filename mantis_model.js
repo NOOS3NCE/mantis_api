@@ -153,8 +153,8 @@ const createLens = (body) => {
 const createGearHistory = (body) => {
     console.log("HISTORY BODY:", body)
     return new Promise(function(resolve, reject){
-        const {kit_id, lens_id, history_message, history_target, history_sender, history_title} = body
-        pool.query('INSERT INTO gear_history (kit_id, lens_id, history_message, history_target, history_sender, history_title, history_created_at, history_updated_at) SELECT $1, $2, $3, $4, $5, $6, NOW(), NOW() RETURNING *', [kit_id, lens_id, history_message, history_target, history_sender, history_title], (error, results) => {
+        const {kit_id, lens_id, history_message, history_target, history_sender, history_title, camera_id} = body
+        pool.query('INSERT INTO gear_history (kit_id, lens_id, history_message, history_target, history_sender, history_title, history_created_at, history_updated_at, camera_id) SELECT $1, $2, $3, $4, $5, $6, NOW(), NOW(), $7 RETURNING *', [kit_id, lens_id, history_message, history_target, history_sender, history_title, camera_id], (error, results) => {
             if(error){
                 console.log("CREATE HISTORY REJECT: ", error)
                 reject(error)
