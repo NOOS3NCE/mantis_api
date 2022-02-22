@@ -60,6 +60,17 @@ const swapLenses=(body)=>{
         })
     })
 }
+const swapCameras=(body)=>{
+    const {camera_id, kit_id} = body.body
+    return new Promise(function(resolve,reject){
+        pool.query('UPDATE cameras SET kit_id = $2 WHERE camera_id = $1', [camera_id,kit_id],async(error,results)=>{
+            if(error){
+                reject(error)
+            }
+            resolve(`Camera has been moved to new kit:${results} `)
+        })
+    })
+}
 const getKit = (id) => {
     return new Promise(function(resolve, reject) {
         let kit
@@ -131,11 +142,11 @@ const createVenue = (body) => {
 const createLens = (body) => {
     return new Promise(function(resolve, reject){
         const {lens_brand, lens_serial, lens_model, kit_id, lens_purchase_date, lens_img} = body
-        pool.query('INSERT INTO lenses (lens_brand, lens_model_id, lens_serial, lens_model, kit_id, lens_purchase_date, lens_created_at, lens_updated_at, lens_img) SELECT $1,(SELECT COALESCE(MAX(lens_model_id) + 1,1)  FROM lenses WHERE lens_model = $3), $2, $3, $4, $5, NOW(), NOW(), $6', [lens_brand, lens_serial, lens_model, kit_id, lens_purchase_date, lens_img], (error, results) => {
+        pool.query('INSERT INTO lenses (lens_brand, lens_model_id, lens_serial, lens_model, kit_id, lens_purchase_date, lens_created_at, lens_updated_at, lens_img) SELECT $1,(SELECT COALESCE(MAX(lens_model_id) + 1,1)  FROM lenses WHERE lens_model = $3), $2, $3, $4, $5, NOW(), NOW(), $6 RETURNING *', [lens_brand, lens_serial, lens_model, kit_id, lens_purchase_date, lens_img], (error, results) => {
             if(error){
                 reject(error)
             }
-            resolve(`A new lens has been added: ${results}`)
+            resolve(results.rows)
         })
     })
 }
@@ -143,13 +154,13 @@ const createGearHistory = (body) => {
     console.log("HISTORY BODY:", body)
     return new Promise(function(resolve, reject){
         const {kit_id, lens_id, history_message, history_target, history_sender, history_title} = body
-        pool.query('INSERT INTO gear_history (kit_id, lens_id, history_message, history_target, history_sender, history_title, history_created_at, history_updated_at) SELECT $1, $2, $3, $4, $5, $6, NOW(), NOW()', [kit_id, lens_id, history_message, history_target, history_sender, history_title], (error, results) => {
+        pool.query('INSERT INTO gear_history (kit_id, lens_id, history_message, history_target, history_sender, history_title, history_created_at, history_updated_at) SELECT $1, $2, $3, $4, $5, $6, NOW(), NOW() RETURNING *', [kit_id, lens_id, history_message, history_target, history_sender, history_title], (error, results) => {
             if(error){
                 console.log("CREATE HISTORY REJECT: ", error)
                 reject(error)
             }
             console.log("CREATE HISTORY RESULTS: ", results)
-            resolve(`A new lens has been added: ${results}`)
+            resolve(results.rows)
         })
     })
 }
@@ -169,11 +180,11 @@ const createCamera = (body) => {
     return new Promise(function(resolve, reject){
         const {camera_brand, camera_serial, camera_model, kit_id, camera_img} = body
         console.log("LENS BODY:", body)
-        pool.query('INSERT INTO cameras (camera_brand, camera_serial, camera_model, camera_img, kit_id) SELECT $1, $2, $3, $5, $4', [camera_brand,camera_serial, camera_model, kit_id, camera_img], (error, results) => {
+        pool.query('INSERT INTO cameras (camera_brand, camera_serial, camera_model, camera_img, kit_id, camera_created_at, camera_updated_at) SELECT $1, $2, $3, $5, $4, NOW(), NOW() RETURNING *', [camera_brand,camera_serial, camera_model, kit_id, camera_img], (error, results) => {
             if(error){
                 reject(error)
             }
-            resolve(`A new lens has been added: ${results}`)
+            resolve(results.rows)
         })
     })
 }
@@ -219,5 +230,6 @@ module.exports = {
     createCamera,
     getCameras,
     createGearHistory,
-    getKitHistory
+    getKitHistory,
+    swapCameras
 }
