@@ -219,7 +219,15 @@ app.get('/mantis_api/history/kit/:id', (req, res) => {
             res.status(500).send(error);
         })
 })
-
+app.post('/mantis_api/imgurfake', (req,res) => {
+    mantis_model.fakeImgurUpload(req.body)
+        .then(response => {
+            res.status(200).send(response);
+        })
+        .catch(error => {
+            res.status(500).send(error);
+        })
+})
 //PORT------------------------------------------------------------------------------------------------------
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)

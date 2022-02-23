@@ -146,7 +146,8 @@ const createLens = (body) => {
             if(error){
                 reject(error)
             }
-            resolve(results.rows)
+            console.log("CREATE LENS RESULTS",results)
+            resolve(results)
         })
     })
 }
@@ -160,7 +161,7 @@ const createGearHistory = (body) => {
                 reject(error)
             }
             console.log("CREATE HISTORY RESULTS: ", results)
-            resolve(results.rows)
+            resolve(results)
         })
     })
 }
@@ -184,7 +185,8 @@ const createCamera = (body) => {
             if(error){
                 reject(error)
             }
-            resolve(results.rows)
+            console.log("CREATE CAMERA RESULTS",results)
+            resolve(results)
         })
     })
 }
@@ -213,6 +215,18 @@ const getCities = () => {
         })
     })
 }
+const fakeImgurUpload = () => {
+    return new Promise( function(resolve, reject) {
+        {
+            if(true){
+            resolve({
+                    data: {
+                        link: 'https://i.imgur.com/z4v3Jd2.gif'
+                    }
+            })
+        }}
+    })
+}
 
 module.exports = {
     getKits,
@@ -231,5 +245,6 @@ module.exports = {
     getCameras,
     createGearHistory,
     getKitHistory,
-    swapCameras
+    swapCameras,
+    fakeImgurUpload
 }
