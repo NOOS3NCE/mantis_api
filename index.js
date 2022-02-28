@@ -13,7 +13,25 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers');
     next();
 });
-
+//USERS---------------------------------------------------------------------------------------------------
+app.get('/mantis_api/user', (req,res)=> {
+    mantis_model.getUsers()
+        .then(response => {
+            res.status(200).send(response)
+        })
+        .catch(error => {
+            res.status(500).send(error)
+        })
+})
+app.post('/mantis_api/user', (req, res) => {
+    mantis_model.createUser(req.body)
+        .then(response => {
+            res.status(200).send(response);
+        })
+        .catch(error => {
+            res.status(500).send(error);
+        })
+})
 //EVENTS---------------------------------------------------------------------------------------------------
 app.get('/mantis_api/event', (req,res)=> {
     mantis_model.getEvents()

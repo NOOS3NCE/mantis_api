@@ -49,6 +49,27 @@ const getCameras = () => {
         })
     })
 }
+const getUsers = () => {
+    return new Promise( function(resolve,reject) {
+        pool.query('SELECT * FROM users', async (error, results) => {
+            if(error){
+                reject(error)
+            }
+            resolve(results.rows)
+        })
+    })
+}
+const createUser = (body) => {
+    return new Promise( function(resolve, reject){
+        const {user_firstname, user_lastname, user_email, user_google_id, user_img} = body
+        pool.query('INSERT INTO users(user_firstname, user_lastname, user_email, user_google_id, user_img) SELECT $1, $2, $3, $4, $5', [user_firstname, user_lastname, user_email, user_google_id, user_img], (error, results) => {
+            if(error){
+                reject(error)
+            }
+            resolve(`A new user has been added: ${results}`)
+        })
+    })
+}
 const swapLenses=(body)=>{
     const {lens_id, kit_id} = body.body
     return new Promise(function(resolve,reject){
@@ -246,5 +267,7 @@ module.exports = {
     createGearHistory,
     getKitHistory,
     swapCameras,
-    fakeImgurUpload
+    fakeImgurUpload,
+    getUsers,
+    createUser
 }
