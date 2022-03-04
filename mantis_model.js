@@ -21,7 +21,7 @@ const getEvents = () => {
 }
 const getKits= () => {
     return new Promise(function(resolve, reject) {
-        pool.query('SELECT kits.*, cities.city_code, users.user_firstname, users.user_lastname FROM kits LEFT JOIN cities ON kits.city_id = cities.city_id LEFT JOIN users ON kits.user_id = users.user_id GROUP BY kits.kit_id, cities.city_id, users.user_id ORDER BY kits.kit_display ASC', async (error, results) => {
+        pool.query('select * from kits_fully order by kits_fully.kit_display', async (error, results) => {
             if (error) {
                 reject(error)
             }
@@ -167,33 +167,27 @@ const createLens = (body) => {
             if(error){
                 reject(error)
             }
-            console.log("CREATE LENS RESULTS",results)
             resolve(results)
         })
     })
 }
 const createGearHistory = (body) => {
-    console.log("HISTORY BODY:", body)
     return new Promise(function(resolve, reject){
         const {kit_id, lens_id, history_message, history_target, history_sender, history_title, camera_id} = body
         pool.query('INSERT INTO gear_history (kit_id, lens_id, history_message, history_target, history_sender, history_title, history_created_at, history_updated_at, camera_id) SELECT $1, $2, $3, $4, $5, $6, NOW(), NOW(), $7 RETURNING *', [kit_id, lens_id, history_message, history_target, history_sender, history_title, camera_id], (error, results) => {
             if(error){
-                console.log("CREATE HISTORY REJECT: ", error)
                 reject(error)
             }
-            console.log("CREATE HISTORY RESULTS: ", results)
             resolve(results)
         })
     })
 }
 const getKitHistory = (id) => {
-    console.log("ID: ",id)
     return new Promise( function(resolve,reject) {
         pool.query('SELECT * FROM gear_history WHERE kit_id = $1 ORDER BY history_updated_at DESC', [id], async (error, results) => {
             if(error){
                 reject(error)
             }
-            console.log(results)
             resolve(results.rows)
         })
     })
@@ -201,19 +195,26 @@ const getKitHistory = (id) => {
 const createCamera = (body) => {
     return new Promise(function(resolve, reject){
         const {camera_brand, camera_serial, camera_model, kit_id, camera_img} = body
-        console.log("LENS BODY:", body)
         pool.query('INSERT INTO cameras (camera_brand, camera_serial, camera_model, camera_img, kit_id, camera_created_at, camera_updated_at) SELECT $1, $2, $3, $5, $4, NOW(), NOW() RETURNING *', [camera_brand,camera_serial, camera_model, kit_id, camera_img], (error, results) => {
             if(error){
                 reject(error)
             }
-            console.log("CREATE CAMERA RESULTS",results)
             resolve(results)
         })
     })
 }
-const loadOutKit = (id) => {
+const loadOutKit = (body) => {
+    console.log("LOAD OUT BODY:", body)
+    const {user_id, kit_id} = body
     return new Promise(function(resolve, reject){
-        pool.query('UPDATE kit_loadedOut FROM kits WHERE id = $1', [id])
+        pool.query(`UPDATE kits SET user_id = $1, kit_status = 'Loaded Out' WHERE kit_id = $2`, [user_id, kit_id])
+    })
+}
+const loadInKit = (body) => {
+    console.log("LOAD OUT BODY:", body)
+    const {kit_id} = body
+    return new Promise(function(resolve, reject){
+        pool.query(`UPDATE kits SET user_id = null, kit_status = 'In Office' WHERE kit_id = $1`, [kit_id])
     })
 }
 const deleteKit = (id) => {
@@ -256,6 +257,7 @@ module.exports = {
     deleteKit,
     getCities,
     loadOutKit,
+    loadInKit,
     createLens,
     getLenses,
     swapLenses,
@@ -269,5 +271,5 @@ module.exports = {
     swapCameras,
     fakeImgurUpload,
     getUsers,
-    createUser
+    createUser,
 }

@@ -137,6 +137,24 @@ app.delete('/mantis_api/kit/:id', (req, res) => {
             res.status(500).send(error);
         })
 })
+app.patch('/mantis_api/kit/loadout', (req, res)=>{
+    mantis_model.loadOutKit(req.body.params)
+        .then(response =>{
+            res.status(200).send(response);
+        })
+        .catch(error => {
+            res.status(500).send(error);
+        })
+})
+app.patch('/mantis_api/kit/loadin', (req, res)=>{
+    mantis_model.loadInKit(req.body.params)
+        .then(response =>{
+            res.status(200).send(response);
+        })
+        .catch(error => {
+            res.status(500).send(error);
+        })
+})
 
 //LENSES---------------------------------------------------------------------------------------------------
 app.get('/mantis_api/lens', (req, res) => {
