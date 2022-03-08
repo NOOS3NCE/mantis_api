@@ -32,6 +32,15 @@ app.post('/mantis_api/user', (req, res) => {
             res.status(500).send(error);
         })
 })
+app.patch('/mantis_api/user/kit', (req, res) => {
+    mantis_model.updateUserKit(req.body.params)
+        .then(response => {
+            res.status(200).send(response);
+        })
+        .catch(error => {
+            res.status(500).send(error);
+        })
+})
 //EVENTS---------------------------------------------------------------------------------------------------
 app.get('/mantis_api/event', (req,res)=> {
     mantis_model.getEvents()
@@ -109,6 +118,16 @@ app.get('/mantis_api/kit', (req, res) => {
 
 app.get('/mantis_api/kit/:id', (req, res) => {
     mantis_model.getKit(req.params.id)
+        .then(response => {
+            res.status(200).send(response);
+        })
+        .catch(error => {
+            res.status(500).send(error);
+            console.log("REQUEST",req.params.id)
+        })
+})
+app.get('/mantis_api/user/:id', (req, res) => {
+    mantis_model.getUser(req.params.id)
         .then(response => {
             res.status(200).send(response);
         })
@@ -215,6 +234,16 @@ app.post('/mantis_api/camera', (req, res) => {
 })
 
 //CLIENTS---------------------------------------------------------------------------------------------------
+app.get('/mantis_api/client', (req,res)=> {
+    mantis_model.getClients()
+        .then(response => {
+            res.status(200).send(response)
+        })
+        .catch(error => {
+            res.status(500).send(error)
+        })
+})
+
 app.post('/mantis_api/client', (req,res) => {
     mantis_model.createClient(req.body)
         .then(response => {
