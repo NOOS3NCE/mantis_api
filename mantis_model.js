@@ -199,12 +199,12 @@ const getKit = (id) => {
 }
 const createKit = (body) => {
     return new Promise(function(resolve, reject) {
-        const {kit_display, city_id, kit_name, kit_type} = body
-        pool.query('INSERT INTO kits (kit_name, kit_display, kit_type, city_id) VALUES ($3,$1,$4,$2)', [kit_display, city_id, kit_name, kit_type] ,async (error, results) => {
+        const {kit_display, city_id, kit_type, kit_case_style} = body
+        pool.query('INSERT INTO kits (kit_display, kit_type, city_id, kit_case_style) VALUES ($1,$3,$2,$4) RETURNING *', [kit_display, city_id, kit_type, kit_case_style] ,async (error, results) => {
             if (error) {
                 reject(error)
             }
-            resolve(`A new kit has been added: ${results}`)
+            resolve(results.rows)
         })
     })
 }
