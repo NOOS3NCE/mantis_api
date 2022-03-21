@@ -85,6 +85,16 @@ const getLenses = () => {
         })
     })
 }
+const getLens = (id) => {
+    return new Promise( function(resolve,reject) {
+        pool.query('SELECT lenses.*, kits.kit_display FROM kits RIGHT JOIN lenses ON lenses.kit_id = kits.kit_id WHERE lenses.lens_id = $1', [id], async (error, results) => {
+            if(error){
+                reject(error)
+            }
+            resolve(results.rows[0])
+        })
+    })
+}
 const getCameras = () => {
     return new Promise( function(resolve,reject) {
         pool.query('SELECT cameras.*, kits.kit_display FROM kits RIGHT JOIN cameras ON cameras.kit_id = kits.kit_id GROUP BY cameras.kit_id, cameras.camera_model, cameras.camera_brand, cameras.camera_serial, cameras.camera_img, cameras.camera_display, cameras.camera_id, kits.kit_id, kits.kit_display ORDER BY cameras.camera_display ASC', async (error, results) => {
@@ -92,6 +102,16 @@ const getCameras = () => {
                 reject(error)
             }
             resolve(results.rows)
+        })
+    })
+}
+const getCamera = (id) => {
+    return new Promise( function(resolve,reject) {
+        pool.query('SELECT cameras.*, kits.kit_display FROM kits RIGHT JOIN cameras ON cameras.kit_id = kits.kit_id WHERE cameras.camera_id = $1',[id], async (error, results) => {
+            if(error){
+                reject(error)
+            }
+            resolve(results.rows[0])
         })
     })
 }
@@ -338,12 +358,14 @@ module.exports = {
     loadInKit,
     createLens,
     getLenses,
+    getLens,
     swapLenses,
     getEvents,
     createClient,
     createVenue,
     createCamera,
     getCameras,
+    getCamera,
     createGearHistory,
     getKitHistory,
     swapCameras,
@@ -353,5 +375,5 @@ module.exports = {
     createUser,
     updateUserKit,
     getEvent,
-    getClients
+    getClients,
 }

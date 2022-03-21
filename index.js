@@ -185,6 +185,15 @@ app.get('/mantis_api/lens', (req, res) => {
             res.status(500).send(error);
         })
 })
+app.get('/mantis_api/lens/:id', (req, res) => {
+    mantis_model.getLens(req.params.id)
+        .then(response => {
+            res.status(200).send(response);
+        })
+        .catch(error => {
+            res.status(500).send(error);
+        })
+})
 app.patch('/mantis_api/lens/swap', (req,res)=>{
     mantis_model.swapLenses(req)
         .then(response =>  {
@@ -207,6 +216,15 @@ app.post('/mantis_api/lens', (req, res) => {
 //CAMERAS---------------------------------------------------------------------------------------------------
 app.get('/mantis_api/camera', (req, res) => {
     mantis_model.getCameras()
+        .then(response => {
+            res.status(200).send(response);
+        })
+        .catch(error => {
+            res.status(500).send(error);
+        })
+})
+app.get('/mantis_api/camera/:id', (req, res) => {
+    mantis_model.getCamera(req.params.id)
         .then(response => {
             res.status(200).send(response);
         })
