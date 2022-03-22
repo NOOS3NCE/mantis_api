@@ -40,7 +40,7 @@ const getEvent = (id) => {
                         if (error) {
                             reject(error)
                         }
-                        const venue = venueInfo
+                        const venue = venueInfo.rows[0]
                         const primaryContact = primaryClient.rows[0]
                         const secondaryContact = secondaryClient.rows[0]
                         event = results.rows[0]
